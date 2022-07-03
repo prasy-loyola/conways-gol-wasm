@@ -34,7 +34,7 @@ let ctx = canvas.getContext("2d");
 
 
       );
-    }, 1000);
+    }, 100);
   } catch (e) {
     console.log(e)
   }

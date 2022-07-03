@@ -58,13 +58,13 @@ impl Game {
                 }
                 if alive_neighbours > 0 {
                     unsafe {
-                        alert(
-                            format!(
-                                " row: {}, col:{},alive neighbours {}",
-                                row, col, alive_neighbours
-                            )
-                            .as_str(),
-                        );
+                        //alert(
+                        //    format!(
+                        //        " row: {}, col:{},alive neighbours {}",
+                        //        row, col, alive_neighbours
+                        //    )
+                        //    .as_str(),
+                        //);
                     }
                 }
                 if alive_neighbours < 2 {
@@ -94,7 +94,9 @@ pub fn init() -> u32 {
     game.state[1][10] = 200;
     game.state[2][10] = 200;
     game.state[3][10] = 200;
+    game.state[3][9] = 200;
 
+    game.state[2][8] = 200;
     unsafe {
         alert(format!("{:?}", game).as_str());
     }
