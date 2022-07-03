@@ -11,3 +11,6 @@ python -m http.server 8000
 ```
 
 Open a browser and load [http://localhost:8000](http://localhsot:8000)
+
+Credits:
+Patterns from [https://conwaylife.com/](https://conwaylife.com/)

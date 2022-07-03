@@ -2,10 +2,10 @@ extern "C" {
     fn alert(s: &str);
     fn fillRect(x: u32, y: u32, w: u32, h: u32, r: u8, g: u8, b: u8, a: u8);
 }
-const CELL_SIZE: u32 = 30;
+const CELL_SIZE: u32 = 10;
 const SCREEN_WIDTH: u32 = 1200;
 const SCREEN_HEIGHT: u32 = 900;
-const BORDER_WIDTH: u32 = 2;
+const BORDER_WIDTH: u32 = 1;
 const ROWS: usize = (SCREEN_HEIGHT / CELL_SIZE) as usize;
 const COLS: usize = (SCREEN_WIDTH / CELL_SIZE) as usize;
 const COLOR: u8  = 200;
@@ -88,10 +88,12 @@ impl Game {
         }
         let initial_state: Vec<Vec<u8>> = initial
             .lines()
-            .filter(|l| !l.is_empty())
+            .filter(|l| {
+                !(l.is_empty() || l.starts_with("!"))            
+            })
             .map(|c| {
                 c.chars()
-                    .map(|c| if c == '*' { COLOR } else { 0 })
+                    .map(|c| if c == 'O' { COLOR } else { 0 })
                     .collect()
             })
             .collect();
@@ -101,11 +103,21 @@ impl Game {
             state: vec![vec![0; COLS]; ROWS],
         };
 
-        for row in 0..initial_state.len() {
-            for col in 0..initial_state[0].len() {
-                game.state[row][col] = initial_state[row][col];
+        let mut r = 0;
+        for row in initial_state.iter() {
+            let mut c =0;
+            for col in row.iter() {
+                game.state[r + row_offset][c + col_offset] = *col;
+                c +=1;
             }
+            r +=1;
         }
+
+        //for row in 0..initial_state.len() {
+            //for col in 0..initial_state[0].len() {
+                //game.state[row + row_offset][col + col_offset] = initial_state[row][col];
+            //}
+        //}
 
         return game;
     }
