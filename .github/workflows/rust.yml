@@ -22,3 +22,5 @@ jobs:
       with:
         default_author: github_actions
         new_branch: github-io
+        push: origin github-io --set-upstream --force
+        add: ./wasm_game.wasm --force
