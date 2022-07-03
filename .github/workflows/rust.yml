@@ -24,3 +24,7 @@ jobs:
         new_branch: github-io
         push: origin github-io --set-upstream --force
         add: ./wasm_game.wasm --force
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: ./ # The folder the action should deploy.
