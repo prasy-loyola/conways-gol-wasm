@@ -5,6 +5,13 @@ var wasm = null;
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
+var initial_state = `
+000*000
+0*0*000
+00**000
+0000000
+`;
+
 (async () => {
   let response = await fetch('wasm_game.wasm');
   let bytes = await response.arrayBuffer();
@@ -19,7 +26,7 @@ let ctx = canvas.getContext("2d");
   wasm = instance;
   console.log(wasm.exports.memory);
   try {
-    let game = instance.exports.init();
+    let game = instance.exports.init(...get_str_as_wasmstr(instance,initial_state), 0 ,0 );
     console.log(game);
     window.requestAnimationFrame(() =>
       instance.exports.render(game)
@@ -34,7 +41,7 @@ let ctx = canvas.getContext("2d");
 
 
       );
-    }, 100);
+    }, 60);
   } catch (e) {
     console.log(e)
   }

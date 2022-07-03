@@ -8,6 +8,7 @@ const SCREEN_HEIGHT: u32 = 900;
 const BORDER_WIDTH: u32 = 2;
 const ROWS: usize = (SCREEN_HEIGHT / CELL_SIZE) as usize;
 const COLS: usize = (SCREEN_WIDTH / CELL_SIZE) as usize;
+const COLOR: u8  = 200;
 #[derive(Debug)]
 pub struct Game {
     name: String,
@@ -73,32 +74,51 @@ impl Game {
                     next_state[row as usize][col as usize] = 0;
                 } else if self.state[row as usize][col as usize] == 0 {
                     if alive_neighbours == 3 {
-                        next_state[row as usize][col as usize] = 200;
+                        next_state[row as usize][col as usize] = COLOR;
                     }
                 }
             }
         }
         self.state = next_state;
     }
+
+    fn new(initial: &str, row_offset: usize, col_offset: usize) -> Game {
+        unsafe {
+            alert(format!("initial : {:?}", initial).as_str());
+        }
+        let initial_state: Vec<Vec<u8>> = initial
+            .lines()
+            .filter(|l| !l.is_empty())
+            .map(|c| {
+                c.chars()
+                    .map(|c| if c == '*' { COLOR } else { 0 })
+                    .collect()
+            })
+            .collect();
+
+        let mut game = Game {
+            name: "New Game".to_string(),
+            state: vec![vec![0; COLS]; ROWS],
+        };
+
+        for row in 0..initial_state.len() {
+            for col in 0..initial_state[0].len() {
+                game.state[row][col] = initial_state[row][col];
+            }
+        }
+
+        return game;
+    }
 }
 
 #[no_mangle]
-pub fn init() -> u32 {
-    let mut game = Game {
-        name: "New Game".to_string(),
-        state: vec![vec![0; COLS]; ROWS],
-    };
+pub fn init(initial_state: &str, row_offset: usize, col_offset: usize) -> u32 {
+    let mut game = Game::new(initial_state, row_offset, col_offset);
     unsafe {
         fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 56, 56, 56, 255);
     }
-    game.state[1][10] = 200;
-    game.state[2][10] = 200;
-    game.state[3][10] = 200;
-    game.state[3][9] = 200;
-
-    game.state[2][8] = 200;
     unsafe {
-        alert(format!("{:?}", game).as_str());
+        //alert(format!("{:?}", game).as_str());
     }
 
     return Box::into_raw(Box::new(game)) as u32;
