@@ -6,7 +6,7 @@
         {
             "label": "Build Wasm",
             "type": "shell",
-            "command": "cargo build --target wasm32-unknown-unknown --release",
+            "command": "./build.sh",
             "problemMatcher": [
                 "$rustc"
             ]

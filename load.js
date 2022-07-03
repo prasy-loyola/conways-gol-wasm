@@ -6,7 +6,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
 (async () => {
-  let response = await fetch('target/wasm32-unknown-unknown/release/wasm_game.wasm');
+  let response = await fetch('wasm_game.wasm');
   let bytes = await response.arrayBuffer();
   let { instance } = await WebAssembly.instantiate(bytes, {
     "env": {
