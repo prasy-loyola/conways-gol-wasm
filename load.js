@@ -9,10 +9,7 @@ canvas.setAttribute("width", window.innerWidth);
 canvas.setAttribute("height", window.innerHeight);
 let selectedPattern = new URL(window.location.href).searchParams.get("pattern");
 let patternSelect = document.getElementById("patterns");
-if (screen.lockOrientation) {
 
-  screen.lockOrientation('landscape');
-}
 patterns.slice(0).forEach(p => {
   let option = document.createElement("option");
   option.text = p.replace(".cells", "");
