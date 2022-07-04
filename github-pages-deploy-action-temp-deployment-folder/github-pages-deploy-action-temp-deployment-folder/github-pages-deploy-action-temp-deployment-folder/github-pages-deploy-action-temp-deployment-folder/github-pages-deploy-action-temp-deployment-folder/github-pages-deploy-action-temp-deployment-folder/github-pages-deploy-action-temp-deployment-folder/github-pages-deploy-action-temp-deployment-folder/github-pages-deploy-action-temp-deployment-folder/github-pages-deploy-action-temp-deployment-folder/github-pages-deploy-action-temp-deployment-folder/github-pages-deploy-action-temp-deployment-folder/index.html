@@ -3,11 +3,26 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Game</title>
+  <title>Conway's Game of Life : Wasm</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #form {
+      font-size: larger;
+    }
+  </style>
 </head>
 
 <body>
-  <canvas id="canvas" width="1200" height="900"></canvas>
+  <div class="container">
+
+    <div id="form"><label>Pattern: </label><select id="patterns"></select></div>
+    <canvas id="canvas" width="1300" height="600"></canvas>
+  </div>
+
   <script type="module" src="load.js">
   </script>
 </body>

@@ -68,6 +68,10 @@ impl Game {
                         next_state[row as usize][col as usize] = self.color;
                     }
                 }
+                else {
+
+                        next_state[row as usize][col as usize] = (alive_neighbours - 3 ) * 50 + self.color;
+                }
             }
         }
         self.state = next_state;
