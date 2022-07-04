@@ -4,9 +4,15 @@ import { draw_rect } from "./canvas.js"
 import { patterns } from "./patterns/index.js";
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
+
+canvas.setAttribute("width", window.innerWidth);
+canvas.setAttribute("height", window.innerHeight);
 let selectedPattern = new URL(window.location.href).searchParams.get("pattern");
 let patternSelect = document.getElementById("patterns");
+if (screen.lockOrientation) {
 
+  screen.lockOrientation('landscape');
+}
 patterns.slice(0).forEach(p => {
   let option = document.createElement("option");
   option.text = p.replace(".cells", "");
@@ -43,7 +49,9 @@ for (let i = 0; i < 200; i++) {
     let resp = await fetch("patterns/" + selectedPattern + ".cells");
     initial_state = await resp.text();
   }
-  let game = instance.exports.init(...get_str_as_wasmstr(instance, initial_state), 1, 1);
+  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50);
+
+  instance.exports.add_pattern(game,...get_str_as_wasmstr(instance, initial_state), 1, 1);
 
   patternSelect.addEventListener("change", async (e) => {
     //console.log(e.target.value)

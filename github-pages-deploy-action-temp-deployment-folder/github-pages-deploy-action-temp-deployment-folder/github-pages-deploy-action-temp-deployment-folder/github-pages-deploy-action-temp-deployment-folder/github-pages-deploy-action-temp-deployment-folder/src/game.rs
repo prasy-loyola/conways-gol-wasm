@@ -108,7 +108,7 @@ impl Game {
     fn reset(&mut self){
         self.state  = vec![vec![0; self.cols]; self.rows];
     }
-    fn new(initial: &str, row_offset: usize, col_offset: usize) -> Game {
+    fn new(width: u32, height: u32) -> Game {
         unsafe {
             //alert(format!("initial : {:?}", initial).as_str());
         }
@@ -116,8 +116,8 @@ impl Game {
         let color = 230;
         let cell_size: u32 = 8;
         let border_width = 1;
-        let screen_height : u32= 600;
-        let screen_width : u32= 1300;
+        let screen_height : u32= height;
+        let screen_width : u32= width;
         let rows = (screen_height / cell_size) as usize;
         let cols = (screen_width / cell_size) as usize;
 
@@ -136,7 +136,6 @@ impl Game {
         //game.state[row + row_offset][col + col_offset] = initial_state[row][col];
         //}
         //}
-        game.update(initial, row_offset, col_offset);
         return game;
     }
 
@@ -163,8 +162,8 @@ impl Game {
 }
 
 #[no_mangle]
-pub fn init(initial_state: &str, row_offset: usize, col_offset: usize) -> u32 {
-    let mut game = Game::new(initial_state, row_offset, col_offset);
+pub fn init(width: u32, height: u32) -> u32 {
+    let mut game = Game::new(width,height);
     unsafe {
         fillRect(0, 0, game.screen_width, game.screen_height, 56, 56, 56, 255);
     }
