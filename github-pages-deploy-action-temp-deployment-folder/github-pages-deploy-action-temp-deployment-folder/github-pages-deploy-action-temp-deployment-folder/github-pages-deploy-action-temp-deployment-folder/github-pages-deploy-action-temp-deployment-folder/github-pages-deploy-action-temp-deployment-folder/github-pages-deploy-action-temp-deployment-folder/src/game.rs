@@ -110,7 +110,7 @@ impl Game {
     }
     fn new(initial: &str, row_offset: usize, col_offset: usize) -> Game {
         unsafe {
-            alert(format!("initial : {:?}", initial).as_str());
+            //alert(format!("initial : {:?}", initial).as_str());
         }
 
         let color = 200;
