@@ -49,7 +49,7 @@ for (let i = 0; i < 200; i++) {
     let resp = await fetch("patterns/" + selectedPattern + ".cells");
     initial_state = await resp.text();
   }
-  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50);
+  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50, 14, 1);
 
   instance.exports.add_pattern(game,...get_str_as_wasmstr(instance, initial_state), 1, 1);
 
@@ -77,5 +77,5 @@ for (let i = 0; i < 200; i++) {
 
 
     );
-  }, 80);
+  }, 120);
 })();
