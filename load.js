@@ -10,6 +10,21 @@ canvas.setAttribute("height", window.innerHeight);
 let selectedPattern = new URL(window.location.href).searchParams.get("pattern");
 let patternSelect = document.getElementById("patterns");
 
+const CELL_SIZE = 14;
+
+function center_pattern(pattern) {
+  let lines = pattern.split("\n")
+    .filter(l => !(l.startsWith("!") || l == ""));
+  let max_length = lines.length;
+  let max_width = lines.map(l => l.length)
+    .reduce((p, c) => p > c ? p : c);
+
+  let col_offset = (((window.innerWidth / CELL_SIZE) - max_width) / 2).toFixed(0);
+  let row_offset = (((window.innerHeight / CELL_SIZE) - max_length) / 2).toFixed(0);
+  return [row_offset, col_offset];
+}
+
+
 patterns.slice(0).forEach(p => {
   let option = document.createElement("option");
   option.text = p.replace(".cells", "");
@@ -46,16 +61,22 @@ for (let i = 0; i < 200; i++) {
     let resp = await fetch("patterns/" + selectedPattern + ".cells");
     initial_state = await resp.text();
   }
-  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50, 14, 1);
 
-  instance.exports.add_pattern(game,...get_str_as_wasmstr(instance, initial_state), 1, 1);
+  center_pattern(initial_state);
+  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50, CELL_SIZE, 1);
+  instance.exports.add_pattern(game, ...get_str_as_wasmstr(instance, initial_state),
+    ...center_pattern(initial_state)
+  );
 
   patternSelect.addEventListener("change", async (e) => {
-    //console.log(e.target.value)
     let resp = await fetch("patterns/" + e.target.value);
     let pattern = await resp.text();
     instance.exports.reset(game);
-    instance.exports.add_pattern(game, ...get_str_as_wasmstr(instance, pattern), 10, 10);
+    center_pattern(pattern);
+    instance.exports.add_pattern(game, ...get_str_as_wasmstr(instance, pattern),
+      ...center_pattern(pattern)
+    );
+
     let newURL = new URL(window.location.href)
     newURL.searchParams.set("pattern", e.target.value.replace(".cells", ""))
     window.history.pushState({}, null, newURL.toString());
