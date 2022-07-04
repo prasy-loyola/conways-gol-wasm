@@ -115,11 +115,6 @@ impl Game {
             rows: rows,
             cols: cols,
         };
-        //for row in 0..initial_state.len() {
-        //for col in 0..initial_state[0].len() {
-        //game.state[row + row_offset][col + col_offset] = initial_state[row][col];
-        //}
-        //}
         return game;
     }
 
