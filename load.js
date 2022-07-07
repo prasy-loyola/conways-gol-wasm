@@ -64,7 +64,7 @@ for (let i = 0; i < window.innerHeight/cellSize; i++) {
   }
 
   center_pattern(current_pattern);
-  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50, cellSize, 1);
+  let game = instance.exports.init(window.innerWidth, window.innerHeight - 50, cellSize, 0);
   instance.exports.add_pattern(game, ...get_str_as_wasmstr(instance, current_pattern),
     ...center_pattern(current_pattern)
   );
