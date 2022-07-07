@@ -97,6 +97,13 @@ impl Game {
         self.state  = vec![vec![0; self.cols]; self.rows];
     }
 
+    fn change_cell_size(&mut self, cell_size: u32){
+        self.cell_size = cell_size;
+        self.rows = (self.screen_height / cell_size) as usize;
+        self.cols = (self.screen_width / cell_size) as usize;
+        self.state  = vec![vec![0; self.cols]; self.rows];
+    }
+
     fn new(width: u32, height: u32, cell_size: u32, border_width: u32) -> Game {
 
         let color = 230;
@@ -115,11 +122,6 @@ impl Game {
             rows: rows,
             cols: cols,
         };
-        //for row in 0..initial_state.len() {
-        //for col in 0..initial_state[0].len() {
-        //game.state[row + row_offset][col + col_offset] = initial_state[row][col];
-        //}
-        //}
         return game;
     }
 
@@ -148,19 +150,20 @@ impl Game {
 #[no_mangle]
 pub fn init(width: u32, height: u32, cell_size: u32, border_width: u32) -> u32 {
     let game = Game::new(width,height,cell_size, border_width);
+    draw_background(&game);
+    return Box::into_raw(Box::new(game)) as u32;
+}
+
+fn draw_background(game: &Game){
     unsafe {
         fillRect(0, 0, game.screen_width, game.screen_height, 56, 56, 56, 255);
     }
-
-    return Box::into_raw(Box::new(game)) as u32;
 }
 
 #[no_mangle]
 pub fn render(game: *mut Game) {
     let game = get_game(game);
-    unsafe {
-        fillRect(0, 0, game.screen_width, game.screen_height, 70, 70, 70, 50);
-    }
+    draw_background(&game);
     game.render();
 }
 
@@ -175,7 +178,16 @@ pub fn add_pattern(game: *mut Game, pattern: &str, row_offset: usize, col_offset
 pub fn reset(game: *mut Game){
     let game = get_game(game);
     game.reset();
+    draw_background(&game);
 }
+
+#[no_mangle]
+pub fn change_cell_size(game: *mut Game, cell_size: u32){
+    let game = get_game(game);
+    game.change_cell_size(cell_size);
+    draw_background(&game);
+}
+
 
 #[no_mangle]
 pub fn update(game: *mut Game) {
