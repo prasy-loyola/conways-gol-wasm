@@ -37,8 +37,8 @@ let rand = () => Math.floor(Math.random() * 2);
 
 let current_pattern = "";
 
-for (let i = 0; i < 200; i++) {
-  for (let j = 0; j < 200; j++) {
+for (let i = 0; i < window.innerHeight/cellSize; i++) {
+  for (let j = 0; j < window.innerWidth/cellSize; j++) {
     current_pattern += rand() == 1 ? "O" : ".";
   }
   current_pattern += "\n";
