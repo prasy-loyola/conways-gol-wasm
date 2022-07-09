@@ -12,9 +12,7 @@ let selectedCellSize = new URL(window.location.href).searchParams.get("cellsize"
 let selectedRefreshRate = new URL(window.location.href).searchParams.get("refreshms");
 let patternSelect = document.getElementById("patterns");
 let cellSizeInput = document.getElementById("cellsize");
-let cellSizeOutput = document.getElementById("cellsize-output");
 let refreshIntervalInput = document.getElementById("refreshInterval");
-let refreshIntervalOutput = document.getElementById("refreshInterval-output");
 var cellSize = selectedCellSize ? selectedCellSize * 1 :  5;
 cellSizeInput.value = cellSize;
 
@@ -95,7 +93,6 @@ for (let i = 0; i < window.innerHeight/cellSize; i++) {
   cellSizeInput.addEventListener("change", async (e) => {
     console.log("changing cell size to ", e.target.value);
     cellSize = e.target.value;
-    cellSizeOutput.value = cellSize;
     instance.exports.change_cell_size(game, cellSize);
     center_pattern(current_pattern);
     instance.exports.add_pattern(game, ...get_str_as_wasmstr(instance, current_pattern),
@@ -109,7 +106,6 @@ for (let i = 0; i < window.innerHeight/cellSize; i++) {
   refreshIntervalInput.addEventListener("change", async (e) => {
     console.log("changing cell size to ", e.target.value);
     refreshIntervalInMs = e.target.value;
-    refreshIntervalOutput.value = refreshIntervalInMs;
     let newURL = new URL(window.location.href);
     newURL.searchParams.set("refreshms", e.target.value);
     window.location.href = newURL.toString();
