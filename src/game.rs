@@ -1,10 +1,26 @@
 
 extern "C" {
     fn fillRect(x: u32, y: u32, w: u32, h: u32, r: u8, g: u8, b: u8, a: u8);
+    fn print(text: &str);
 }
+
+#[derive(Debug, Clone)]
+struct Coord {
+    x: usize,
+    y: usize,
+}
+
+#[derive(Debug, Clone)]
+struct Cell {
+    is_alive: bool,
+    alive_neighbours : u8,
+    coord: Coord,
+}
+
 #[derive(Debug)]
 pub struct Game {
-    state: Vec<Vec<u8>>,
+    state: Vec<Vec<Cell>>,
+    live_cells: Vec<Coord>,
     cell_size: u32,
     screen_width: u32,
     screen_height: u32,
@@ -20,14 +36,36 @@ impl Game {
             return false;
         }
 
-        if self.state[row as usize][col as usize] > 0 {
+        if self.state[row as usize][col as usize].is_alive {
             return true;
         }
         return false;
     }
 
-    fn next_day(&mut self) {
+    fn mark_neighbours(&mut self , coord: Coord) {
+
+        for row_offset in -1..2 as i32 {
+            for col_offset in -1..2 as i32 {
+                if  !(row_offset ==0 && col_offset ==0 ) && 
+                    coord.x as i32 + col_offset  >= 0 &&
+                    coord.x as i32 + col_offset < self.cols as  i32 &&
+
+                    coord.y  as i32 + row_offset >= 0 &&
+                    coord.y as i32 + row_offset < self.rows  as i32
+                {
+                    self.state[(coord.y as i32 + row_offset) as usize][(coord.x as i32 + col_offset) as usize].alive_neighbours += 1;
+                }
+            }
+        }
+
+    }
+
+    fn next_generation(&mut self) {
         let mut next_state = self.state.clone();
+        let mut new_alive_cells = self.live_cells.clone();
+
+
+        
 
         for row in 0..self.rows as i32 {
             for col in 0..self.cols as i32 {
@@ -43,22 +81,22 @@ impl Game {
 
                 //Die of loneliness
                 if alive_neighbours < 2 {
-                    next_state[row as usize][col as usize] = 0;
+                    next_state[row as usize][col as usize].is_alive = false;
                 } 
                 //Die of overpopulation 
                 else if alive_neighbours > 3 {
-                    next_state[row as usize][col as usize] = 0;
+                    next_state[row as usize][col as usize].is_alive =false
                 } 
                 
-                else if self.state[row as usize][col as usize] == 0 {
+                else if !self.state[row as usize][col as usize].is_alive {
                     //new life
                     if alive_neighbours == 3 {
-                        next_state[row as usize][col as usize] = self.color;
+                        next_state[row as usize][col as usize].is_alive = true;
                     }
                 }
                 else {
 
-                        next_state[row as usize][col as usize] = (alive_neighbours - 3 ) * 50 + self.color;
+                        next_state[row as usize][col as usize].is_alive = true;
                 }
             }
         }
@@ -75,7 +113,9 @@ impl Game {
                     .collect()
             })
             .collect();
+            log_console(format!("Got initial state :{}, rows: {}, cols: {}", initial_state.len(), self.rows, self.cols));
 
+            log_console(format!("cells size rows: {}, cols: {}", self.state.len(), self.state[0].len()));
         let mut r = 0;
         for row in initial_state.iter() {
             let mut c = 0;
@@ -85,23 +125,35 @@ impl Game {
                     c += 1;
                     continue;
                 }
-
-                self.state[r + row_offset][c + col_offset] = *col;
+                log_console(format!("updating row: {}, col: {}", r+ row_offset, c + col_offset));
+                self.state[r + row_offset][c + col_offset].is_alive = *col > 0 ;
+                //if *col > 0 {self.live_cells.push(Coord{ x: (c + col_offset), y: (r + row_offset)})}
                 c += 1;
             }
             r += 1;
         }
     }
 
+    fn new_state ( rows: usize, cols: usize) -> Vec<Vec<Cell>> {
+        let mut state = vec![vec![]];
+        for row in 0..rows {
+            state.push(vec![]);
+            for col in 0.. cols {
+                state[row].push(Cell { coord: Coord {x: col, y: row}, is_alive: false, alive_neighbours: 0 });
+            }
+        }
+            log_console(format!("state rows: {} cols: {}", state.len(), state[0].len()));
+        return state;
+    }
     fn reset(&mut self){
-        self.state  = vec![vec![0; self.cols]; self.rows];
+        self.state  = Game::new_state(self.rows,self.cols);
     }
 
     fn change_cell_size(&mut self, cell_size: u32){
         self.cell_size = cell_size;
         self.rows = (self.screen_height / cell_size) as usize;
         self.cols = (self.screen_width / cell_size) as usize;
-        self.state  = vec![vec![0; self.cols]; self.rows];
+        self.state  = Game::new_state(self.rows, self.cols);
     }
 
     fn new(width: u32, height: u32, cell_size: u32, border_width: u32) -> Game {
@@ -113,7 +165,8 @@ impl Game {
         let cols = (screen_width / cell_size) as usize;
 
         let game = Game {
-            state: vec![vec![0; cols]; rows],
+            state: Game::new_state(rows, cols),
+            live_cells: vec![],
             color: color,
             cell_size: cell_size,
             border_width: border_width,
@@ -136,7 +189,7 @@ impl Game {
                     (row * self.cell_size) + self.border_width,
                     self.cell_size - self.border_width,
                     self.cell_size - self.border_width,
-                    self.state[row as usize][col as usize],
+                    if self.state[row as usize][col as usize].is_alive { self.color } else {0},
                     0,
                     0,
                     255,
@@ -167,10 +220,20 @@ pub fn render(game: *mut Game) {
     game.render();
 }
 
+fn log_console(message: String){
+
+    return ;
+    unsafe {
+    print(&message.as_str());
+    }
+}
+
 #[no_mangle]
 pub fn add_pattern(game: *mut Game, pattern: &str, row_offset: usize, col_offset: usize){
+    log_console(format!("game: {:?}", game));
     let game = get_game(game);
 
+    log_console(format!("got game: {:?}", game.cols));
     game.update(pattern, row_offset, col_offset);
 }
 
@@ -192,7 +255,7 @@ pub fn change_cell_size(game: *mut Game, cell_size: u32){
 #[no_mangle]
 pub fn update(game: *mut Game) {
     let game = get_game(game);
-    game.next_day();
+    game.next_generation();
 }
 
 pub fn get_game(game: *mut Game) -> &'static mut Game {

@@ -49,7 +49,7 @@ for (let i = 0; i < window.innerHeight/cellSize; i++) {
   let bytes = await response.arrayBuffer();
   let { instance } = await WebAssembly.instantiate(bytes, {
     "env": {
-      "alert": (ptr, len) => log(instance.exports.memory.buffer, ptr, len),
+      "print": (ptr, len) => log(instance.exports.memory.buffer, ptr, len),
       "fillRect": (x, y, w, h, r, g, b, a) => draw_rect(ctx, x, y, w, h, r, g, b, a)
     }
 
