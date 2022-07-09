@@ -8,10 +8,19 @@ let ctx = canvas.getContext("2d");
 canvas.setAttribute("width", window.innerWidth);
 canvas.setAttribute("height", window.innerHeight);
 let selectedPattern = new URL(window.location.href).searchParams.get("pattern");
+let selectedCellSize = new URL(window.location.href).searchParams.get("cellsize");
+let selectedRefreshRate = new URL(window.location.href).searchParams.get("refreshms");
 let patternSelect = document.getElementById("patterns");
-let cellSizeSlider = document.getElementById("cellsize");
+let cellSizeInput = document.getElementById("cellsize");
 let cellSizeOutput = document.getElementById("cellsize-output");
-var cellSize = 5;
+let refreshIntervalInput = document.getElementById("refreshInterval");
+let refreshIntervalOutput = document.getElementById("refreshInterval-output");
+var cellSize = selectedCellSize ? selectedCellSize * 1 :  5;
+cellSizeInput.value = cellSize;
+
+var refreshIntervalInMs = selectedRefreshRate ? selectedRefreshRate * 1 : 120;
+
+refreshIntervalInput.value = refreshIntervalInMs;
 
 function center_pattern(pattern) {
   let lines = pattern.split("\n")
@@ -83,7 +92,7 @@ for (let i = 0; i < window.innerHeight/cellSize; i++) {
     window.history.pushState({}, null, newURL.toString());
   });
 
-  cellSizeSlider.addEventListener("change", async (e) => {
+  cellSizeInput.addEventListener("change", async (e) => {
     console.log("changing cell size to ", e.target.value);
     cellSize = e.target.value;
     cellSizeOutput.value = cellSize;
@@ -92,6 +101,18 @@ for (let i = 0; i < window.innerHeight/cellSize; i++) {
     instance.exports.add_pattern(game, ...get_str_as_wasmstr(instance, current_pattern),
       ...center_pattern(current_pattern)
     );
+    let newURL = new URL(window.location.href)
+    newURL.searchParams.set("cellsize", e.target.value)
+    window.history.pushState({}, null, newURL.toString());
+  });
+
+  refreshIntervalInput.addEventListener("change", async (e) => {
+    console.log("changing cell size to ", e.target.value);
+    refreshIntervalInMs = e.target.value;
+    refreshIntervalOutput.value = refreshIntervalInMs;
+    let newURL = new URL(window.location.href);
+    newURL.searchParams.set("refreshms", e.target.value);
+    window.location.href = newURL.toString();
   });
 
   window.requestAnimationFrame(() =>
@@ -107,5 +128,5 @@ setInterval(() => {
 
 
   );
-}, 120);
+}, refreshIntervalInMs);
 }) ();
