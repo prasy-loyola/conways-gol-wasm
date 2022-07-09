@@ -108,6 +108,7 @@ impl Game {
     fn reset(&mut self){
         self.state  = vec![vec![0; self.cols]; self.rows];
     }
+
     fn new(width: u32, height: u32, cell_size: u32, border_width: u32) -> Game {
         unsafe {
             //alert(format!("initial : {:?}", initial).as_str());
@@ -189,7 +190,6 @@ pub fn add_pattern(game: *mut Game, pattern: &str, row_offset: usize, col_offset
 
     game.update(pattern, row_offset, col_offset);
 }
-
 
 #[no_mangle]
 pub fn reset(game: *mut Game){

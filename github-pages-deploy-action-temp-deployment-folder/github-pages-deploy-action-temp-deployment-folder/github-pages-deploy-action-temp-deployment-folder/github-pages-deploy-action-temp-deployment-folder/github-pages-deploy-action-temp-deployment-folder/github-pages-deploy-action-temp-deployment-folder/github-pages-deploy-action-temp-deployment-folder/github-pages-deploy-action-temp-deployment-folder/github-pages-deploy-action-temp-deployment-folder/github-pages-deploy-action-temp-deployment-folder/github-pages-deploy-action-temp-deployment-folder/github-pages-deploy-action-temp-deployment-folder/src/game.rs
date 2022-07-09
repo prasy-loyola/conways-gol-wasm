@@ -113,7 +113,7 @@ impl Game {
             //alert(format!("initial : {:?}", initial).as_str());
         }
 
-        let color = 200;
+        let color = 230;
         let cell_size: u32 = 8;
         let border_width = 1;
         let screen_height : u32= 600;
@@ -179,7 +179,7 @@ pub fn init(initial_state: &str, row_offset: usize, col_offset: usize) -> u32 {
 pub fn render(game: *mut Game) {
     let mut game = get_game(game);
     unsafe {
-        fillRect(0, 0, game.screen_width, game.screen_height, 56, 56, 23, 10);
+        fillRect(0, 0, game.screen_width, game.screen_height, 70, 70, 70, 50);
     }
     game.render();
 }

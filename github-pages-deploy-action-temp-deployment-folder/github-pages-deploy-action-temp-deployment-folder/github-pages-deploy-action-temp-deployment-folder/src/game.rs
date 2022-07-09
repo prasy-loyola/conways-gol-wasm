@@ -1,6 +1,5 @@
 
 extern "C" {
-    fn alert(s: &str);
     fn fillRect(x: u32, y: u32, w: u32, h: u32, r: u8, g: u8, b: u8, a: u8);
 }
 #[derive(Debug)]
@@ -39,17 +38,6 @@ impl Game {
                         if !(r== 0 && c ==0) && self.is_alive(row + r, col + c) {
                             alive_neighbours +=1;
                         }
-                    }
-                }
-                if alive_neighbours > 0 {
-                    unsafe {
-                        //alert(
-                        //    format!(
-                        //        " row: {}, col:{},alive neighbours {}",
-                        //        row, col, alive_neighbours
-                        //    )
-                        //    .as_str(),
-                        //);
                     }
                 }
 
@@ -110,19 +98,14 @@ impl Game {
     }
 
     fn new(width: u32, height: u32, cell_size: u32, border_width: u32) -> Game {
-        unsafe {
-            //alert(format!("initial : {:?}", initial).as_str());
-        }
 
         let color = 230;
-        //let cell_size: u32 = 8;
-        //let border_width = 1;
         let screen_height : u32= height;
         let screen_width : u32= width;
         let rows = (screen_height / cell_size) as usize;
         let cols = (screen_width / cell_size) as usize;
 
-        let mut game = Game {
+        let game = Game {
             state: vec![vec![0; cols]; rows],
             color: color,
             cell_size: cell_size,
@@ -164,12 +147,9 @@ impl Game {
 
 #[no_mangle]
 pub fn init(width: u32, height: u32, cell_size: u32, border_width: u32) -> u32 {
-    let mut game = Game::new(width,height,cell_size, border_width);
+    let game = Game::new(width,height,cell_size, border_width);
     unsafe {
         fillRect(0, 0, game.screen_width, game.screen_height, 56, 56, 56, 255);
-    }
-    unsafe {
-        //alert(format!("{:?}", game).as_str());
     }
 
     return Box::into_raw(Box::new(game)) as u32;
@@ -177,7 +157,7 @@ pub fn init(width: u32, height: u32, cell_size: u32, border_width: u32) -> u32 {
 
 #[no_mangle]
 pub fn render(game: *mut Game) {
-    let mut game = get_game(game);
+    let game = get_game(game);
     unsafe {
         fillRect(0, 0, game.screen_width, game.screen_height, 70, 70, 70, 50);
     }
@@ -199,14 +179,14 @@ pub fn reset(game: *mut Game){
 
 #[no_mangle]
 pub fn update(game: *mut Game) {
-    let mut game = get_game(game);
+    let game = get_game(game);
     game.next_day();
 }
 
 pub fn get_game(game: *mut Game) -> &'static mut Game {
-    let mut game = unsafe {
+    let game = unsafe {
         let ref_mut: &mut Game = &mut *game;
-        let mut game = &mut *ref_mut;
+        let game = &mut *ref_mut;
         game
     };
     return game;
